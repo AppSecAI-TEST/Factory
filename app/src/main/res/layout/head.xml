@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/my_head"
+    android:layout_width="match_parent"
+    android:background="@color/toolHead"
+    android:padding="10dip"
+    android:fitsSystemWindows="true"
+    android:minHeight="?attr/actionBarSize"
+    android:theme="@style/AppTheme"
+    android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/style_text"
+        android:text="Style# : "
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:typeface="serif"
+        android:layout_gravity="left"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/style_num"
+        android:text="Date : "
+        android:textColor="@color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:typeface="serif"
+        android:layout_gravity="right"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"/>
+</android.support.v7.widget.Toolbar>
