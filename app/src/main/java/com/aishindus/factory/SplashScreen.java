@@ -29,7 +29,7 @@ public class SplashScreen extends Activity {
                 // This method will be executed once the timer is over
                 // Start your app main activity
                 if(session.checkLogin()){
-                Intent i = new Intent(SplashScreen.this, Report.class);
+                Intent i = new Intent(SplashScreen.this, Home.class);
                 startActivity(i);}
 
                 // close this activity

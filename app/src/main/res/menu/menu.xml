@@ -17,10 +17,10 @@
         android:title="Refresh"
         app:showAsAction="ifRoom"/>
 
-    <!-- Settings, should always be in the overflow -->
+    <!-- Settings, should always be in the overflow
     <item android:id="@+id/action_logout"
         android:icon="@drawable/logout"
         android:title="Logout"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"/>  -->
 
 </menu>

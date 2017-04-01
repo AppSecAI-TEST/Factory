@@ -192,7 +192,7 @@ public class LoginActivity extends AppCompatActivity {
             if (success) {
                 session.createLoginSession("Android Hive", "anroidhive@gmail.com");
                 finish();
-                Intent intent = new Intent(LoginActivity.this, Report.class);
+                Intent intent = new Intent(LoginActivity.this, Home.class);
                 startActivity(intent);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

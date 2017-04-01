@@ -14,7 +14,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -39,7 +38,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_report);
 
         horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
@@ -47,6 +46,8 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         toolbar = (Toolbar) findViewById(R.id.my_head);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // style = (TableRow) findViewById(R.id.style);
         po_num = (TableRow) findViewById(R.id.po_no);
@@ -94,6 +95,14 @@ public class Report extends AppCompatActivity implements ValidationResponse {
                     toolbar.setElevation(0);
             }
         });
+
+        /*LinearLayout parent = (LinearLayout) findViewById(R.id.parent);
+        Snackbar snackbar = Snackbar
+                .make(parent, "Welcome to AndroidHive", Snackbar.LENGTH_LONG);
+
+        snackbar.show();*/
+
+
 
     }
 
@@ -155,41 +164,6 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             }
         });
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_logout:
-                session.logoutUser();
-                return true;
-
-            /*case R.id.action_refresh:
-                Toast.makeText(Report.this,"Refreshing... ",Toast.LENGTH_SHORT).show();
-                Get_Result conn = new Get_Result(this);
-                conn.delegate = Report.this;
-                conn.execute();
-                /*Toast.makeText(Report.this,"Refreshing... ",Toast.LENGTH_SHORT).show();
-
-                final Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = getIntent();
-                        finish();
-                        startActivity(intent);
-                        Toast.makeText(Report.this,"Refreshed",Toast.LENGTH_SHORT).show();
-                    }
-                }, 2000);
-                return true;*/
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-
-        }
-
     }
 
     @Override

@@ -31,7 +31,7 @@ public class Get_Result extends AsyncTask<String, Void, String> {
         String resp = "";
         //rf= Integer.parseInt(params[1].substring(1,2));
         try {
-            URL dburl = new URL("http://hoststuffs.890m.com/factory.php");
+            URL dburl = new URL("http://aishwary.heliohost.org/fetch_result.php");
             HttpURLConnection httpURLConnection = (HttpURLConnection) dburl.openConnection();
             httpURLConnection.setReadTimeout(20000);
             httpURLConnection.setConnectTimeout(10000);
