@@ -24,8 +24,8 @@ public class ImageAdapter extends BaseAdapter {
  
 		if (convertView == null) {
 			gridView = new View(context);
-			// get layout from menu.xml
-			gridView = inflater.inflate(R.layout.menu, null);
+			// get layout from menu_grid_view.xmld_view.xml
+			gridView = inflater.inflate(R.layout.menu_grid_view, null);
 			// set value into textview
 			TextView textView = (TextView) gridView.findViewById(R.id.textView);
 			textView.setText(menuValues[position]);

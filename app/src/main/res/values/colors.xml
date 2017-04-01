@@ -9,6 +9,7 @@
     <color name="primary_back">#191949</color>
     <color name="accent">#7D7E82</color>
 
+    <color name="grid_view_background">#287186</color>
     <color name="black">#000000</color>
     <color name="jet">#222222</color>
     <color name="oil">#333333</color>
@@ -22,4 +23,6 @@
     <color name="textBackground2">#2D2D2D</color>
     <color name="textColor">#FFFFFF</color>
     <color name="toolHead">#B8B8B8</color>
+
+    <color name="color1">#DDff8800</color>
 </resources>
