@@ -110,7 +110,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu_action_bar_report, menu);
 
         /*final String num = "2810";
         MenuItem searchItem = menu.findItem(R.id.action_search);
