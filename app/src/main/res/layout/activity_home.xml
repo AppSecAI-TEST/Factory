@@ -38,14 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:background="@color/grid_view_background"
-                android:columnWidth="80dp"
-                android:gravity="center"
-                android:horizontalSpacing="16dp"
                 android:numColumns="2"
-                android:padding="26dp"
-                android:stretchMode="spacingWidth"
                 android:verticalSpacing="16dp" />
         </RelativeLayout>
 
