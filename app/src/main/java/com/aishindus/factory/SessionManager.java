@@ -45,7 +45,7 @@ public class SessionManager {
      */
     public void createLoginSession(String name, String email) {
         // Storing login value as TRUE
-        Log.e("createlogin","here"+name+email);
+        Log.e("createlogin", "here" + name + email);
         editor.putBoolean(IS_LOGIN, true);
 
         // Storing name in pref
@@ -64,20 +64,10 @@ public class SessionManager {
      * Else won't do anything
      */
     public boolean checkLogin() {
-        // Check login status
         if (!this.isLoggedIn()) {
-            // user is not logged in redirect him to Login Activity
-
             Intent i = new Intent(_context, LoginActivity.class);
-
-            // Closing all the Activities
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-            // Add new Flag to start new Activity
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-
-            // Staring Login Activity
             _context.startActivity(i);
             return false;
         }
