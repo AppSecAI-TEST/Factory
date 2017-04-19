@@ -3,17 +3,19 @@ package com.aishindus.factory;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -24,7 +26,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TableLayout;
@@ -40,36 +41,29 @@ import java.util.Date;
 import java.util.Iterator;
 
 import static com.aishindus.factory.R.id.container;
+import static com.aishindus.factory.R.id.toolbar;
 
 public class Report extends AppCompatActivity implements ValidationResponse {
-    TableRow style, po_num;
-    TableLayout table, scrollable_table;
-    SessionManager session;
-    static NestedScrollView scrollView;
-    Toolbar toolbar, mToolbar;
-    static HorizontalScrollView horizontalScrollView;
-    ObjectAnimator animator;
+
+    Toolbar mToolbar;
+    private ObjectAnimator animator;
     private PopupWindow mPopup;
     private static String resultString;
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
+    int position;
+    private CoordinatorLayout corCoordinatorLayout;
+    String query = "SELECT * FROM Factory order by style";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        corCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_content);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = new Date();
+        String today = sdf.format(date);
 
         /*horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
@@ -80,21 +74,31 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         style = (TableRow) findViewById(R.id.style);
         po_num = (TableRow) findViewById(R.id.po_no);*/
 
-        session = new SessionManager(getApplicationContext());
+        Intent intent = getIntent();
+        position = intent.getIntExtra("position", 0);
+        switch (position) {
+            case 0:
+                query = "SELECT * FROM Factory where Date=CURDATE() order by style;";
+                toolbar.setTitle(Html.fromHtml("<small>Date: " + today + "</small>"));
+                break;
+            case 1:
+                String style = intent.getStringExtra("element");
+                query = "select * from search_by_style where style='" + style + "';";
+                toolbar.setTitle(Html.fromHtml("<small>Style#: " + style + "</small>"));
+                break;
+            case 2:
+                style = intent.getStringExtra("element");
+                query = "SELECT * FROM Factory where Date='" + style + "' order by style";
+                toolbar.setTitle(Html.fromHtml("<small>Date: " + style + "</small>"));
+                break;
+        }
 
         Get_Result conn1 = new Get_Result(this);
         conn1.delegate = Report.this;
         showProgress(true);
-        conn1.execute();
+        conn1.execute(query);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-        Date date = new Date();
-        String today = sdf.format(date);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(Html.fromHtml("<small>Date: " + today + "</small>"));
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
@@ -166,7 +170,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             }
         });*/
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = (Toolbar) findViewById(toolbar);
         mToolbar.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
@@ -186,7 +190,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
                             Get_Result conn = new Get_Result(Report.this);
                             conn.delegate = Report.this;
                             showProgress(true);
-                            conn.execute();
+                            conn.execute(query);
                         }
                     });
                 }
@@ -276,7 +280,8 @@ public class Report extends AppCompatActivity implements ValidationResponse {
     public void response(boolean result, String s) {
         showProgress(false);
         if (animator != null) animator.end();
-        Log.e("isShowing",""+mPopup.isShowing());
+        Log.e("isShowing", "" + mPopup.isShowing());
+        Log.e("Result", "" + result + s);
         if (result) {
             Report.resultString = s;
             JSONObject jObject = null;
@@ -300,7 +305,8 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             mViewPager.setAdapter(mSectionsPagerAdapter);
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(mViewPager);
-        }
+        } else
+            Snackbar.make(corCoordinatorLayout, Html.fromHtml("<b>No Result !</b>"), Snackbar.LENGTH_INDEFINITE).show();
     }
 
 
@@ -322,8 +328,6 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             View inflatedView = inflater.inflate(R.layout.report, container, false);
             TableLayout table = (TableLayout) inflatedView.findViewById(R.id.tableLayout1);
             TableLayout scrollable_table = (TableLayout) inflatedView.findViewById(R.id.scrollable_part);
-            scrollView = (NestedScrollView) inflatedView.findViewById(R.id.scroll_view);
-            horizontalScrollView = (HorizontalScrollView) inflatedView.findViewById(R.id.horizontalScrollView);
             int textBackground1 = ContextCompat.getColor(getContext(), R.color.textBackground1);
             int textBackground2 = ContextCompat.getColor(getContext(), R.color.textBackground2);
             int colors[] = new int[]{textBackground2, textBackground1};
@@ -405,9 +409,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            //View rootView = inflater.inflate(R.layout.report, container, false);
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = loadData(inflater, container, getArguments().getInt(ARG_SECTION_NUMBER));
             return rootView;
         }

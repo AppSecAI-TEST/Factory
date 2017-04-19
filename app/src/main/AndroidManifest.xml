@@ -17,21 +17,22 @@
             android:theme="@android:style/Theme.Black.NoTitleBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Report"
             android:noHistory="true"
-            android:parentActivityName="com.aishindus.factory.Home"/>
+            android:parentActivityName="com.aishindus.factory.Home" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name"
             android:noHistory="true"
             android:theme="@style/AppTheme.Dark" />
-        <activity android:name=".Home"
-            android:label="Home"></activity>
+        <activity
+            android:name=".Home"
+            android:label="Home"
+            android:noHistory="true"></activity>
     </application>
 
 </manifest>

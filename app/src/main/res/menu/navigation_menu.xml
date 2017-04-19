@@ -10,5 +10,6 @@
         android:title="Settings" />
 
     <item android:id="@+id/nav_logout"
+        android:icon="@mipmap/logout_24"
         android:title="Logout" />
 </menu>

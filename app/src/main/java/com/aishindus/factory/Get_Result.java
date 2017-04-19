@@ -6,12 +6,16 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 /**
  * Created by LENOVO on 07-10-2016.
@@ -29,29 +33,28 @@ public class Get_Result extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
         String resp = "";
-        //rf= Integer.parseInt(params[1].substring(1,2));
         try {
-            URL dburl = new URL("http://aishwary.heliohost.org/fetch_result1.php");
-            HttpURLConnection httpURLConnection = (HttpURLConnection) dburl.openConnection();
+            URL DBUrl = new URL("http://aishwary.heliohost.org/fetch_result1.php");
+            HttpURLConnection httpURLConnection = (HttpURLConnection) DBUrl.openConnection();
             httpURLConnection.setReadTimeout(20000);
             httpURLConnection.setConnectTimeout(10000);
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setDoOutput(true);
-            /*if(rf==1 || rf==4) {
-                String data= URLEncoder.encode("Style_Num", "UTF-8") + "=" + URLEncoder.encode(params[0], "UTF-8");;
-                OutputStream OS = httpURLConnection.getOutputStream();
-                BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
-                bufferedWriter.write(data);
-                bufferedWriter.flush();
-                bufferedWriter.close();
-                OS.close();
-            }*/
+
+            String data = URLEncoder.encode("query", "UTF-8") + "=" + URLEncoder.encode(params[0], "UTF-8");
+            OutputStream OS = httpURLConnection.getOutputStream();
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
+            bufferedWriter.write(data);
+            bufferedWriter.flush();
+            bufferedWriter.close();
+            OS.close();
+
             InputStream IS = httpURLConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(IS, "iso-8859-1"));
             StringBuilder sb = new StringBuilder();
             String line = null;
             while ((line = bufferedReader.readLine()) != null)
-                sb.append(line+"\n");
+                sb.append(line + "\n");
             resp = sb.toString();
             bufferedReader.close();
             IS.close();
@@ -72,18 +75,16 @@ public class Get_Result extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String s) {
-        Log.d("dopost", "here" +s);
+        Log.d("dopost", "here" + s);
         if (s.equals("Connection Error. Please Try Again! ")) {
             Toast.makeText(ctx, s, Toast.LENGTH_LONG).show();
-            delegate.response(false,s);
-        }
-        else {
+            delegate.response(false, s);
+        } else {
             Log.e("Result", s);
-            if (!s.equals("None")) {
+            if (!s.replaceAll("[\n\r]", "").equals("None")) {
                 delegate.response(true, s);
             } else {
                 delegate.response(false, s);
-                Toast.makeText(ctx, s, Toast.LENGTH_LONG).show();
             }
         }
     }
