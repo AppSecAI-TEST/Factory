@@ -185,7 +185,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
                             animator.start();
                             Get_Result conn = new Get_Result(Report.this);
                             conn.delegate = Report.this;
-                            //showProgress(true);
+                            showProgress(true);
                             conn.execute();
                         }
                     });
@@ -251,12 +251,6 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         if (animator != null) animator.end();
     }*/
 
-    int pixelAsDp(int value) {
-        float scale = getResources().getDisplayMetrics().density;
-        int dp = (int) (value * scale + 0.5f);
-        return dp;
-    }
-
     public void showProgress(final boolean show) {
         if (show) {
             final View popupView = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.my_progress, null);
@@ -272,12 +266,17 @@ public class Report extends AppCompatActivity implements ValidationResponse {
                 }
             });
         } else {
-            mPopup.dismiss();
+            if (mPopup != null)
+                mPopup.dismiss();
+
         }
     }
 
     @Override
     public void response(boolean result, String s) {
+        showProgress(false);
+        if (animator != null) animator.end();
+        Log.e("isShowing",""+mPopup.isShowing());
         if (result) {
             Report.resultString = s;
             JSONObject jObject = null;
@@ -301,7 +300,6 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             mViewPager.setAdapter(mSectionsPagerAdapter);
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(mViewPager);
-            if (animator != null) animator.end();
         }
     }
 
