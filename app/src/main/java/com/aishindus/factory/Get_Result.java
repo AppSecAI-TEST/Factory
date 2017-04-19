@@ -31,7 +31,7 @@ public class Get_Result extends AsyncTask<String, Void, String> {
         String resp = "";
         //rf= Integer.parseInt(params[1].substring(1,2));
         try {
-            URL dburl = new URL("http://aishwary.heliohost.org/fetch_result.php");
+            URL dburl = new URL("http://aishwary.heliohost.org/fetch_result1.php");
             HttpURLConnection httpURLConnection = (HttpURLConnection) dburl.openConnection();
             httpURLConnection.setReadTimeout(20000);
             httpURLConnection.setConnectTimeout(10000);
@@ -48,9 +48,11 @@ public class Get_Result extends AsyncTask<String, Void, String> {
             }*/
             InputStream IS = httpURLConnection.getInputStream();
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(IS, "iso-8859-1"));
-            String line = "";
+            StringBuilder sb = new StringBuilder();
+            String line = null;
             while ((line = bufferedReader.readLine()) != null)
-                resp = resp + line;
+                sb.append(line+"\n");
+            resp = sb.toString();
             bufferedReader.close();
             IS.close();
             httpURLConnection.disconnect();
@@ -70,19 +72,18 @@ public class Get_Result extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String s) {
-        Log.d("dopost", "here" + s);
+        Log.d("dopost", "here" +s);
         if (s.equals("Connection Error. Please Try Again! ")) {
             Toast.makeText(ctx, s+" hello", Toast.LENGTH_LONG).show();
-            delegate.response(false,s.split(" "));
+            delegate.response(false,s);
         }
         else {
-            String[] response = s.split("@");
             Log.e("Result", s);
-            if (!response[0].equals("None")) {
-                delegate.response(true, response);
+            if (!s.equals("None")) {
+                delegate.response(true, s);
             } else {
-                delegate.response(false, response);
-                Toast.makeText(ctx, response[0], Toast.LENGTH_LONG).show();
+                delegate.response(false, s);
+                Toast.makeText(ctx, s, Toast.LENGTH_LONG).show();
             }
         }
     }

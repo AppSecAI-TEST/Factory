@@ -7,63 +7,101 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+
+import static com.aishindus.factory.R.id.container;
 
 public class Report extends AppCompatActivity implements ValidationResponse {
     TableRow style, po_num;
     TableLayout table, scrollable_table;
     SessionManager session;
-    ScrollView scrollView;
+    static NestedScrollView scrollView;
     Toolbar toolbar, mToolbar;
-    HorizontalScrollView horizontalScrollView;
+    static HorizontalScrollView horizontalScrollView;
     ObjectAnimator animator;
     private PopupWindow mPopup;
+    private static String resultString;
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections. We use a
+     * {@link FragmentPagerAdapter} derivative, which will keep every
+     * loaded fragment in memory. If this becomes too memory intensive, it
+     * may be best to switch to a
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
 
-        horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
+        /*horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
-        session = new SessionManager(getApplicationContext());
         toolbar = (Toolbar) findViewById(R.id.my_head);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        style = (TableRow) findViewById(R.id.style);
+        po_num = (TableRow) findViewById(R.id.po_no);*/
 
-        // style = (TableRow) findViewById(R.id.style);
-        po_num = (TableRow) findViewById(R.id.po_no);
-        table = (TableLayout) findViewById(R.id.tableLayout1);
-        scrollable_table = (TableLayout) findViewById(R.id.scrollable_part);
+        session = new SessionManager(getApplicationContext());
 
         Get_Result conn1 = new Get_Result(this);
         conn1.delegate = Report.this;
         showProgress(true);
         conn1.execute();
 
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = new Date();
+        String today = sdf.format(date);
 
-        po_num.setOnTouchListener(new View.OnTouchListener() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(Html.fromHtml("<small>Date: " + today + "</small>"));
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+/*        po_num.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                /*if(style.getVisibility() == View.VISIBLE) {
+                *//*if(style.getVisibility() == View.VISIBLE) {
                     style.startAnimation(AnimationUtils.loadAnimation(Report.this, android.R.anim.fade_out));
                     style.setVisibility(View.INVISIBLE);
                 } else {
@@ -81,12 +119,12 @@ public class Report extends AppCompatActivity implements ValidationResponse {
                 {
                     final TableRow.LayoutParams lparams = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT, 0); // Width , height
                     et.setLayoutParams(lparams);
-                }*/
+                }*//*
                 return false;
             }
-        });
+        });*/
 
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+/*        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged() {
                 int scrollY = scrollView.getScrollY();
@@ -94,16 +132,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
                 if (scrollY <= 0)
                     toolbar.setElevation(0);
             }
-        });
-
-        /*LinearLayout parent = (LinearLayout) findViewById(R.id.parent);
-        Snackbar snackbar = Snackbar
-                .make(parent, "Welcome to AndroidHive", Snackbar.LENGTH_LONG);
-
-        snackbar.show();*/
-
-
-
+        });*/
     }
 
     // Menu icons are inflated just as they were with actionbar
@@ -137,7 +166,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             }
         });*/
 
-        mToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
         mToolbar.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
@@ -156,7 +185,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
                             animator.start();
                             Get_Result conn = new Get_Result(Report.this);
                             conn.delegate = Report.this;
-                            showProgress(true);
+                            //showProgress(true);
                             conn.execute();
                         }
                     });
@@ -166,7 +195,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         return true;
     }
 
-    @Override
+/*    @Override
     public void response(final boolean result, String[] s) {
 
         int textBackground1 = ContextCompat.getColor(Report.this, R.color.textBackground1);
@@ -176,10 +205,15 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         TextView style_text = (TextView) findViewById(R.id.style_text);
         TextView style_date = (TextView) findViewById(R.id.style_num);
 
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = new Date();
+        String today = sdf.format(date);
+
         if (result) {
+            Log.e("Rsult",""+result);
             if (scrollable_table.getChildCount() > 0) scrollable_table.removeAllViews();
             style_text.setText("Style# : " + s[0].substring(0, s[0].indexOf("#")));
-            style_date.setText("Date : " + "26-02-2017");
+            style_date.setText("Date : " + today);
             for (int k = 0; k < s.length; k++) {
                 for (int i = 0, j = 1, index = 1; i < table.getChildCount(); i++, index++) {
                     if (k == 0)
@@ -215,7 +249,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         horizontalScrollView.scrollTo(0, 0);
         mPopup.dismiss();
         if (animator != null) animator.end();
-    }
+    }*/
 
     int pixelAsDp(int value) {
         float scale = getResources().getDisplayMetrics().density;
@@ -239,6 +273,176 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             });
         } else {
             mPopup.dismiss();
+        }
+    }
+
+    @Override
+    public void response(boolean result, String s) {
+        if (result) {
+            Report.resultString = s;
+            JSONObject jObject = null;
+            try {
+                jObject = new JSONObject(s);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            TabHandler.noOfTabs = jObject.length();
+            Iterator<?> keys = jObject.keys();
+            String key = null;
+            int i = 0;
+            TabHandler.tabNames = new String[jObject.length()];
+            while (keys.hasNext()) {
+                key = (String) keys.next();
+                TabHandler.tabNames[i++] = key;
+            }
+            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+            // Set up the ViewPager with the sections adapter.
+            mViewPager = (ViewPager) findViewById(container);
+            mViewPager.setAdapter(mSectionsPagerAdapter);
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+            tabLayout.setupWithViewPager(mViewPager);
+            if (animator != null) animator.end();
+        }
+    }
+
+
+    /**
+     * A placeholder fragment containing a simple view.
+     */
+    public static class PlaceholderFragment extends Fragment {
+        /**
+         * The fragment argument representing the section number for this
+         * fragment.
+         */
+        private static final String ARG_SECTION_NUMBER = "section_number";
+        static int sectionNumber;
+
+        public PlaceholderFragment() {
+        }
+
+        View loadData(LayoutInflater inflater, ViewGroup container, int sectionNumber) {
+            View inflatedView = inflater.inflate(R.layout.report, container, false);
+            TableLayout table = (TableLayout) inflatedView.findViewById(R.id.tableLayout1);
+            TableLayout scrollable_table = (TableLayout) inflatedView.findViewById(R.id.scrollable_part);
+            scrollView = (NestedScrollView) inflatedView.findViewById(R.id.scroll_view);
+            horizontalScrollView = (HorizontalScrollView) inflatedView.findViewById(R.id.horizontalScrollView);
+            int textBackground1 = ContextCompat.getColor(getContext(), R.color.textBackground1);
+            int textBackground2 = ContextCompat.getColor(getContext(), R.color.textBackground2);
+            int colors[] = new int[]{textBackground2, textBackground1};
+            TableRow tr;
+
+            JSONObject jObject = null;
+            try {
+                jObject = new JSONObject(Report.resultString);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if (scrollable_table.getChildCount() > 0) scrollable_table.removeAllViews();
+            int k = 0;
+            Iterator<?> keys = jObject.keys();
+            String key = null;
+            while (k < sectionNumber) {
+                key = (String) keys.next();
+                k++;
+            }
+            JSONArray jsonArray, temp = null;
+            try {
+                jsonArray = jObject.getJSONArray(key);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    temp = jsonArray.getJSONArray(i);
+                    for (int index = 0, j = 1; index < table.getChildCount(); index++) {
+                        if (i == 0)
+                            tr = new TableRow(getContext());
+                        else
+                            tr = (TableRow) scrollable_table.getChildAt(index);
+                        TextView label = new TextView(getContext());
+                        String value = temp.getString(index);
+                        label.setText(value.equals("null") ? "-" : value);
+                        Log.e("" + index + " " + table.getChildCount(), temp.getString(index));
+                        label.setId(View.generateViewId());
+                        label.setLayoutParams(new TableLayout.LayoutParams(TableLayout.LayoutParams.WRAP_CONTENT, TableLayout.LayoutParams.WRAP_CONTENT));
+                        label.setPadding(pixelAsDp(10), pixelAsDp(10), pixelAsDp(10), pixelAsDp(10));
+                        label.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
+                        label.setTypeface(Typeface.MONOSPACE, Typeface.BOLD);
+                        label.setBackgroundColor(colors[j % 2]);
+                        label.setGravity(Gravity.CENTER);
+                        label.setTextColor(Color.WHITE);
+                        LinearLayout Ll = new LinearLayout(getContext());
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                                TableLayout.LayoutParams.WRAP_CONTENT);
+                        params.setMargins(0, 0, 1, 0);
+                        Ll.addView(label, params);
+                        tr.addView((View) Ll);
+                        if (i == 0)
+                            scrollable_table.addView(tr, new TableLayout.LayoutParams(
+                                    TableLayout.LayoutParams.MATCH_PARENT,
+                                    TableLayout.LayoutParams.WRAP_CONTENT));
+                        j++;
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return inflatedView;
+        }
+
+        int pixelAsDp(int value) {
+            float scale = getResources().getDisplayMetrics().density;
+            int dp = (int) (value * scale + 0.5f);
+            return dp;
+        }
+
+        /**
+         * Returns a new instance of this fragment for the given section
+         * number.
+         */
+        public static PlaceholderFragment newInstance(int sectionNumber) {
+            PlaceholderFragment.sectionNumber = sectionNumber;
+            PlaceholderFragment fragment = new PlaceholderFragment();
+            Bundle args = new Bundle();
+            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            fragment.setArguments(args);
+            return fragment;
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            //View rootView = inflater.inflate(R.layout.report, container, false);
+            View rootView = loadData(inflater, container, getArguments().getInt(ARG_SECTION_NUMBER));
+            return rootView;
+        }
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            // getItem is called to instantiate the fragment for the given page.
+            // Return a PlaceholderFragment (defined as a static inner class below).
+            return PlaceholderFragment.newInstance(position + 1);
+        }
+
+        @Override
+        public int getCount() {
+            // Show 3 total pages.
+            return TabHandler.noOfTabs;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            if (position <= TabHandler.noOfTabs)
+                return TabHandler.tabNames[position];
+            return null;
         }
     }
 }

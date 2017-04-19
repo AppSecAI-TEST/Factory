@@ -5,5 +5,5 @@ package com.aishindus.factory;
  */
 
 public interface ValidationResponse {
-    void response(boolean result, String[] s);
+    void response(boolean result, String s);
 }

@@ -1,327 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/parent"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true"
+    tools:context="com.aishindus.factory.Report">
 
-    <include
-        layout="@layout/my_toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
-    <LinearLayout
-        android:id="@+id/parent_2"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/parent"
-        android:layout_marginTop="0dp"
-        android:orientation="vertical"
-        android:padding="5dp">
+        android:background="#191919"
+        android:paddingTop="@dimen/appbar_padding_top"
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-        <include
-            layout="@layout/head"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#191919"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        </android.support.v7.widget.Toolbar>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.1dp"
-            android:layout_below="@+id/my_head"
-            android:background="#FFFFFF" />
+    </android.support.design.widget.AppBarLayout>
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <ScrollView
-            android:id="@+id/scroll_view"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:id="@+id/fillable_area"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/tableLayout1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:stretchColumns="1">
-
-                    <TableRow
-                        android:id="@+id/po_no"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/po_no_tv1"
-                            android:background="@color/textBackground1"
-                            android:padding="10dip"
-                            android:text="PO Number"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/color"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/color_tv1"
-                            android:background="@color/textBackground2"
-                            android:padding="10dip"
-                            android:text="Color"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/ord_qty"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/ord_qty_tv1"
-                            android:background="@color/textBackground1"
-                            android:padding="10dip"
-                            android:text="Ordered Quantity"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/today_cutting"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/today_cutting_tv1"
-                            android:background="@color/textBackground2"
-                            android:padding="10dip"
-                            android:text="Today's Cutting"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/cutting"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/cutting_tv1"
-                            android:background="@color/textBackground1"
-                            android:padding="10dip"
-                            android:text="Cutting"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/today_stiching"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/today_stiching_tv1"
-                            android:background="@color/textBackground2"
-                            android:padding="10dip"
-                            android:text="Today's Stiching"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/stiching"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/stiching_tv1"
-                            android:background="@color/textBackground1"
-                            android:padding="10dip"
-                            android:text="Stiching"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/today_sw"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/today_sw_tv1"
-                            android:background="@color/textBackground2"
-                            android:padding="10dip"
-                            android:text="Today's Sent Wash"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/sfw"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/sfw_tv1"
-                            android:background="@color/textBackground1"
-                            android:padding="10dip"
-                            android:text="Sent For Wash"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/today_rw"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/today_rw_tv1"
-                            android:background="@color/textBackground2"
-                            android:padding="10dip"
-                            android:text="Today's Received Wash"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/rfw"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/rfw_tv1"
-                            android:background="@color/textBackground1"
-                            android:padding="10dip"
-                            android:text="Received For Wash"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/today_iron"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/today_iron_tv1"
-                            android:background="@color/textBackground2"
-                            android:padding="10dip"
-                            android:text="Today's Iron"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/iron"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/iron_tv1"
-                            android:background="@color/textBackground1"
-                            android:padding="10dip"
-                            android:text="Iron"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/today_pack"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/today_pack_tv1"
-                            android:background="@color/textBackground2"
-                            android:padding="10dip"
-                            android:text="Today's Pack"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/packing"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/packing_tv1"
-                            android:background="@color/textBackground1"
-                            android:padding="10dip"
-                            android:text="Packing"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-
-                    <TableRow
-                        android:id="@+id/shipment"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/shipment_tv1"
-                            android:background="@color/textBackground2"
-                            android:padding="10dip"
-                            android:text="Shipment"
-                            android:textColor="@color/textColor"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:typeface="monospace" />
-                    </TableRow>
-                </TableLayout>
-
-                <HorizontalScrollView
-                    android:id="@+id/horizontalScrollView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none"
-                    android:layout_marginLeft="0.1dp">
-
-                    <TableLayout
-                        android:id="@+id/scrollable_part"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scrollbars="none">
-
-                    </TableLayout>
-                </HorizontalScrollView>
-            </LinearLayout>
-        </ScrollView>
-    </LinearLayout>
-</LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
