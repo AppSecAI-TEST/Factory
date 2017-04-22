@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/nav_account"
+    <item
+        android:id="@+id/nav_account"
         android:icon="@mipmap/ic_person_black_24dp"
-          android:title="My Account" />
+        android:title="My Account" />
 
-    <item android:id="@+id/nav_settings"
-        android:icon="@mipmap/ic_settings_black_24dp"
-        android:title="Settings" />
+    <!--    <item android:id="@+id/nav_settings"
+            android:icon="@mipmap/ic_settings_black_24dp"
+            android:title="Settings" />-->
 
-    <item android:id="@+id/nav_logout"
+    <item
+        android:id="@+id/nav_logout"
         android:icon="@mipmap/logout_24"
         android:title="Logout" />
 </menu>

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -62,8 +63,10 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         corCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_content);
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         String today = sdf.format(date);
+        String today1 = sdf1.format(date);
 
         /*horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
         scrollView = (ScrollView) findViewById(R.id.scroll_view);
@@ -78,7 +81,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         position = intent.getIntExtra("position", 0);
         switch (position) {
             case 0:
-                query = "SELECT * FROM Factory where Date=CURDATE() order by style;";
+                query = "SELECT * FROM Factory where Date='"+today1+"' order by style;";
                 toolbar.setTitle(Html.fromHtml("<small>Date: " + today + "</small>"));
                 break;
             case 1:
@@ -264,6 +267,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             int height = size.y;
             mPopup = new PopupWindow(popupView, width, height);
             mPopup.setFocusable(true);
+            mPopup.setBackgroundDrawable(new BitmapDrawable(getResources(), ""));
             popupView.post(new Runnable() {
                 public void run() {
                     mPopup.showAtLocation(popupView, Gravity.CENTER, 0, 0);
@@ -280,8 +284,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
     public void response(boolean result, String s) {
         showProgress(false);
         if (animator != null) animator.end();
-        Log.e("isShowing", "" + mPopup.isShowing());
-        Log.e("Result", "" + result + s);
+
         if (result) {
             Report.resultString = s;
             JSONObject jObject = null;
@@ -305,8 +308,10 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             mViewPager.setAdapter(mSectionsPagerAdapter);
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(mViewPager);
-        } else
-            Snackbar.make(corCoordinatorLayout, Html.fromHtml("<b>No Result !</b>"), Snackbar.LENGTH_INDEFINITE).show();
+        } else {
+            String value = (s.replaceAll("[\n\r]", "").equals("None"))?"No Result !":s;
+            Snackbar.make(corCoordinatorLayout, Html.fromHtml("<b>"+value+"</b>"), Snackbar.LENGTH_INDEFINITE).show();
+        }
     }
 
 

@@ -3,7 +3,6 @@ package com.aishindus.factory;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -77,7 +76,6 @@ public class Get_Result extends AsyncTask<String, Void, String> {
     protected void onPostExecute(String s) {
         Log.d("dopost", "here" + s);
         if (s.equals("Connection Error. Please Try Again! ")) {
-            Toast.makeText(ctx, s, Toast.LENGTH_LONG).show();
             delegate.response(false, s);
         } else {
             Log.e("Result", s);

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -12,14 +13,16 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
@@ -27,8 +30,6 @@ import java.util.Calendar;
 
 public class Home extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    LinearLayout linearLayoutPopup;
-    RelativeLayout relativeLayout;
     GridView gridView;
     String m_Text = "Hello";
     private DrawerLayout drawerLayout;
@@ -63,20 +64,19 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                 final Intent i = new Intent(Home.this, Report.class);
                 i.putExtra("position", position);
 
+                LayoutInflater layoutInflaterAndroid = LayoutInflater.from(Home.this);
+                final View mView = layoutInflaterAndroid.inflate(R.layout.user_input_dialog_box, null);
+
                 if (position == 0)
                     startActivity(i);
                 else if (position == 1) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
-                    builder.setTitle("Style#: ");
-                    final EditText input = new EditText(Home.this);
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
+                    builder.setView(mView);
+                    final EditText input = (EditText) mView.findViewById(R.id.userInputDialog);
                     input.setInputType(InputType.TYPE_CLASS_NUMBER);
-                    builder.setView(input);
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            m_Text = input.getText().toString();
-                            i.putExtra("element", m_Text);
-                            startActivity(i);
                         }
                     });
                     builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -85,7 +85,31 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                             dialog.cancel();
                         }
                     });
-                    builder.show();
+                    final AlertDialog dialog = builder.create();
+                    dialog.show();
+
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            Boolean wantToCloseDialog = true;
+                            m_Text = input.getText().toString();
+                            if (m_Text.matches("")) {
+                                Log.e("hi","hello");
+                                Animation shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shake);
+                                input.getBackground().mutate().setColorFilter(getResources().getColor(R.color.error), PorterDuff.Mode.SRC_ATOP);
+                                input.startAnimation(shake);
+                                wantToCloseDialog = false;
+                            } else {
+                                i.putExtra("element", m_Text);
+                                startActivity(i);
+                            }
+                            if(wantToCloseDialog)
+                                dialog.dismiss();
+                        }
+                    });
+
                 } else if (position == 2) {
                     final Calendar myCalendar = Calendar.getInstance();
                     DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -122,10 +146,9 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         if (id == R.id.nav_account) {
             Toast.makeText(Home.this, "Account details is coming soon", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_settings) {
-            Toast.makeText(Home.this, "Account settings is coming soon", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_logout) {
             session.logoutUser();
+            finish();
         }
         return false;
     }

@@ -31,8 +31,7 @@
             android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".Home"
-            android:label="Home"
-            android:noHistory="true"></activity>
+            android:label="Home"></activity>
     </application>
 
 </manifest>
