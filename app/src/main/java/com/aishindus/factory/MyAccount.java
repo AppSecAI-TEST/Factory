@@ -6,14 +6,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.HashMap;
 
 public class MyAccount extends AppCompatActivity {
-
-    LinearLayout my_account;
     Toolbar mToolbar;
     SessionManager session;
     EditText name,password,mobile;
@@ -28,12 +25,9 @@ public class MyAccount extends AppCompatActivity {
         mobile = (EditText) findViewById(R.id.print_mobile);
         password = (EditText) findViewById(R.id.print_password);
 
-
         mToolbar = (Toolbar) findViewById(R.id.toolbar_my_account);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        my_account = (LinearLayout) findViewById(R.id.my_account);
 
         disableEditText(name);
         disableEditText(mobile);
@@ -43,7 +37,6 @@ public class MyAccount extends AppCompatActivity {
         name.setText(user.get(session.KEY_NAME));
         mobile.setText(user.get(session.KEY_MOB));
         password.setText(user.get(session.KEY_PASS));
-
     }
 
     @Override
@@ -56,15 +49,10 @@ public class MyAccount extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit:
-                // User chose the "Settings" item, show the app settings UI...
                 Toast.makeText(MyAccount.this,"hello",Toast.LENGTH_SHORT).show();
                 return true;
-
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
     }
 
