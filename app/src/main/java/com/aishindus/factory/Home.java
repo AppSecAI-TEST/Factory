@@ -5,6 +5,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -23,7 +24,7 @@ import android.widget.AdapterView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -88,24 +89,25 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
                     final AlertDialog dialog = builder.create();
                     dialog.show();
 
-                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-                    {
+                    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onClick(View v)
-                        {
+                        public void onClick(View v) {
                             Boolean wantToCloseDialog = true;
                             m_Text = input.getText().toString();
                             if (m_Text.matches("")) {
-                                Log.e("hi","hello");
+                                Log.e("hi", "hello");
                                 Animation shake = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.shake);
-                                input.getBackground().mutate().setColorFilter(getResources().getColor(R.color.error), PorterDuff.Mode.SRC_ATOP);
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    input.getBackground().mutate().setColorFilter(getResources().getColor(R.color.error_col, Home.this.getTheme()), PorterDuff.Mode.SRC_ATOP);
+                                } else
+                                    input.getBackground().mutate().setColorFilter(getResources().getColor(R.color.error_col), PorterDuff.Mode.SRC_ATOP);
                                 input.startAnimation(shake);
                                 wantToCloseDialog = false;
                             } else {
                                 i.putExtra("element", m_Text);
                                 startActivity(i);
                             }
-                            if(wantToCloseDialog)
+                            if (wantToCloseDialog)
                                 dialog.dismiss();
                         }
                     });
@@ -131,6 +133,10 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         });
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        View headerView = navigationView.getHeaderView(0);
+        TextView userName = (TextView) headerView.findViewById(R.id.user_name);
+        userName.setText("Hello " + session.getUserDetails().get(session.KEY_NAME));
     }
 
     @Override
@@ -145,7 +151,8 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         int id = item.getItemId();
 
         if (id == R.id.nav_account) {
-            Toast.makeText(Home.this, "Account details is coming soon", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(Home.this, MyAccount.class);
+            startActivity(i);
         } else if (id == R.id.nav_logout) {
             session.logoutUser();
             finish();

@@ -1,137 +1,120 @@
 package com.aishindus.factory;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.Html;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static com.aishindus.factory.R.id.mobile;
 import static com.aishindus.factory.R.layout.activity_login;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements ValidationResponse, TextWatcher {
 
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-
-    private UserLoginTask mAuthTask = null;
-
-    // References.
-    private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
+    private TextInputLayout mMobileView;
+    private TextInputLayout mPasswordView;
     private InputMethodManager inputManager;
     private PopupWindow mPopup;
     private SessionManager session;
+    TextView _signupLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(activity_login);
+
         // Set up the login form.
         session = new SessionManager(getApplicationContext());
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mMobileView = (TextInputLayout) findViewById(mobile);
         inputManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        _signupLink = (TextView) findViewById(R.id.link_signup);
+        mPasswordView = (TextInputLayout) findViewById(R.id.password);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        mMobileView.getEditText().addTextChangedListener(this);
+        mPasswordView.getEditText().addTextChangedListener(this);
+
+        Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
+        mSignInButton.setOnClickListener(new OnClickListener() {
             @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                            InputMethodManager.HIDE_NOT_ALWAYS);
-                    attemptLogin();
-                    return true;
-                }
-                return false;
+            public void onClick(View view) {
+                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                attemptLogin();
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        _signupLink.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View view) {
-                inputManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
-                attemptLogin();
+            public void onClick(View v) {
+                // Start the Signup activity
+                Intent intent = new Intent(getApplicationContext(), SignupActivity.class);
+                startActivity(intent);
+                finish();
+                overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
             }
         });
     }
 
-    /**
-     * Attempts to sign in or register the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
-     * errors are presented and no actual login attempt is made.
-     */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
 
-        // Reset errors.
-        mEmailView.setError(null);
+        mMobileView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String mobile = mMobileView.getEditText().getText().toString();
+        String password = mPasswordView.getEditText().getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+        if (TextUtils.isEmpty(mobile)) {
+            mMobileView.setError("This field cannot be empty");
+            focusView = mMobileView;
+            cancel = true;
+        } else if (!isMobileValid(mobile)) {
+            mMobileView.setError("Enter Valid Mobile Number");
+            focusView = mMobileView;
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        if (TextUtils.isEmpty(password)) {
+            mPasswordView.setError("This field cannot be empty");
+            focusView = mMobileView;
             cancel = true;
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
+            String query = "select * from users where mobile = '" + mobile + "' and password= '" + password + "';";
+            Get_Result conn = new Get_Result(this);
+            conn.delegate = LoginActivity.this;
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-            mAuthTask.execute((Void) null);
+            conn.execute(URLS.Login_URL, query);
         }
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-
-        return email.contains("@");
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+    private boolean isMobileValid(String mobile) {
+        return mobile.length() != 10 ? false : true;
     }
 
     public void showProgress(final boolean show) {
@@ -145,7 +128,6 @@ public class LoginActivity extends AppCompatActivity {
             mPopup.showAtLocation(findViewById(R.id.email_login_form), Gravity.CENTER, 0, 0);
         } else
             mPopup.dismiss();
-
     }
 
     @Override
@@ -153,65 +135,96 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
-        private final String mEmail;
-        private final String mPassword;
-
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
-
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
-
+    @Override
+    public void response(boolean result, String s) {
+        showProgress(false);
+        if (result) {
+            JSONObject jObject = null;
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
+                jObject = new JSONObject(s);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+            boolean error = false;
+            try {
+                error = jObject.getBoolean("error");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            if (error) {
+                Snackbar.make(findViewById(R.id.email_login_form), Html.fromHtml("<b> Error !!</b>"), Snackbar.LENGTH_INDEFINITE).show();
+            } else {
+                boolean login = false;
+                try {
+                    login = jObject.getBoolean("login");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (login) {
+                    JSONObject user;
+                    String name = null;
+                    String mobile = null;
+                    String pass = null;
+                    try {
+                        user = jObject.getJSONObject("user");
+                        name = user.getString("name");
+                        mobile = user.getString("mobile");
+                        pass = user.getString("password");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    session.createLoginSession(name, mobile, pass);
+                    finish();
+                    Intent intent = new Intent(LoginActivity.this, Home.class);
+                    startActivity(intent);
+                } else {
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(LoginActivity.this);
+                    alertDialog.setTitle("Login failed..")
+                            .setMessage("Username/Password is incorrect")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            });
+                    AlertDialog alert = alertDialog.create();
+                    alert.show();
                 }
             }
-
-            // TODO: register the new account here.
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                session.createLoginSession("Android Hive", "anroidhive@gmail.com");
-                finish();
-                Intent intent = new Intent(LoginActivity.this, Home.class);
-                startActivity(intent);
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
+        } else
+            Snackbar.make(findViewById(R.id.email_login_form), Html.fromHtml("<b> Connection Error. Please Try Again! </b>"), Snackbar.LENGTH_INDEFINITE).show();
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+    }
+
+    @Override
+    public void afterTextChanged(Editable editable) {
+        validateText(editable);
+    }
+
+    private void validateText(Editable editable) {
+        String mobile = mMobileView.getEditText().getText().toString();
+        String password = mPasswordView.getEditText().getText().toString();
+
+        if (editable == mMobileView.getEditText().getEditableText()) {
+            if (mobile.isEmpty() || mobile.length() != 10) {
+                mMobileView.setError("Enter Valid Mobile Number");
+            } else {
+                mMobileView.setError(null);
+            }
+        } else if (editable == mPasswordView.getEditText().getEditableText()) {
+            if (password.isEmpty()) {
+                mPasswordView.setError("This field cannot be empty");
+            } else {
+                mPasswordView.setError(null);
+            }
+        }
+    }
 }
 

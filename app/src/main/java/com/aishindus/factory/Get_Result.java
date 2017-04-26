@@ -33,14 +33,14 @@ public class Get_Result extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... params) {
         String resp = "";
         try {
-            URL DBUrl = new URL("http://aishwary.heliohost.org/fetch_result1.php");
+            URL DBUrl = new URL(params[0]);
             HttpURLConnection httpURLConnection = (HttpURLConnection) DBUrl.openConnection();
             httpURLConnection.setReadTimeout(20000);
             httpURLConnection.setConnectTimeout(10000);
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setDoOutput(true);
 
-            String data = URLEncoder.encode("query", "UTF-8") + "=" + URLEncoder.encode(params[0], "UTF-8");
+            String data = URLEncoder.encode("query", "UTF-8") + "=" + URLEncoder.encode(params[1], "UTF-8");
             OutputStream OS = httpURLConnection.getOutputStream();
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(OS, "UTF-8"));
             bufferedWriter.write(data);
@@ -53,11 +53,12 @@ public class Get_Result extends AsyncTask<String, Void, String> {
             StringBuilder sb = new StringBuilder();
             String line = null;
             while ((line = bufferedReader.readLine()) != null)
-                sb.append(line + "\n");
+                sb.append(line);
             resp = sb.toString();
             bufferedReader.close();
             IS.close();
             httpURLConnection.disconnect();
+
         } catch (SocketTimeoutException e) {
             Log.e("SocketTimeoutException", "here");
             resp = "Connection Error. Please Try Again! ";
@@ -79,7 +80,7 @@ public class Get_Result extends AsyncTask<String, Void, String> {
             delegate.response(false, s);
         } else {
             Log.e("Result", s);
-            if (!s.replaceAll("[\n\r]", "").equals("None")) {
+            if (!s.equals("None")) {
                 delegate.response(true, s);
             } else {
                 delegate.response(false, s);

@@ -67,16 +67,6 @@ public class Report extends AppCompatActivity implements ValidationResponse {
         Date date = new Date();
         String today = sdf.format(date);
         String today1 = sdf1.format(date);
-
-        /*horizontalScrollView = (HorizontalScrollView) findViewById(R.id.horizontalScrollView);
-        scrollView = (ScrollView) findViewById(R.id.scroll_view);
-        toolbar = (Toolbar) findViewById(R.id.my_head);
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        style = (TableRow) findViewById(R.id.style);
-        po_num = (TableRow) findViewById(R.id.po_no);*/
-
         Intent intent = getIntent();
         position = intent.getIntExtra("position", 0);
         switch (position) {
@@ -96,10 +86,10 @@ public class Report extends AppCompatActivity implements ValidationResponse {
                 break;
         }
 
-        Get_Result conn1 = new Get_Result(this);
-        conn1.delegate = Report.this;
+        Get_Result conn = new Get_Result(this);
+        conn.delegate = Report.this;
         showProgress(true);
-        conn1.execute(query);
+        conn.execute(URLS.Query_URL,query);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -309,7 +299,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(mViewPager);
         } else {
-            String value = (s.replaceAll("[\n\r]", "").equals("None"))?"No Result !":s;
+            String value = (s.equals("None"))?"No Result !":s;
             Snackbar.make(corCoordinatorLayout, Html.fromHtml("<b>"+value+"</b>"), Snackbar.LENGTH_INDEFINITE).show();
         }
     }
