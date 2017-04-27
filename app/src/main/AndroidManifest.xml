@@ -40,7 +40,9 @@
             android:theme="@style/AppTheme.Dark" />
         <activity android:name=".MyAccount"
             android:label="My Account"
-            android:parentActivityName=".Home"></activity>
+            android:parentActivityName=".Home"
+            android:theme="@style/AppTheme.Light">
+        </activity>
     </application>
 
 </manifest>

@@ -26,6 +26,6 @@
     <color name="toolHead">#B8B8B8</color>
     <color name="progress_popup_background">#80eeeeee</color>
 
-    <color name="enabled_color">#F7FE2E</color>
-    <color name="disabled_color">#000000</color>
+    <color name="enabled_color">#757575</color>
+    <color name="disabled_color">#757575</color>
 </resources>

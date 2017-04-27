@@ -136,7 +136,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
 
         View headerView = navigationView.getHeaderView(0);
         TextView userName = (TextView) headerView.findViewById(R.id.user_name);
-        userName.setText("Hello " + session.getUserDetails().get(session.KEY_NAME));
+        userName.setText("Hi, " + session.getUserDetails().get(session.KEY_NAME)+"!");
     }
 
     @Override
@@ -153,6 +153,7 @@ public class Home extends AppCompatActivity implements NavigationView.OnNavigati
         if (id == R.id.nav_account) {
             Intent i = new Intent(Home.this, MyAccount.class);
             startActivity(i);
+            overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
         } else if (id == R.id.nav_logout) {
             session.logoutUser();
             finish();

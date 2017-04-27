@@ -183,7 +183,7 @@ public class Report extends AppCompatActivity implements ValidationResponse {
                             Get_Result conn = new Get_Result(Report.this);
                             conn.delegate = Report.this;
                             showProgress(true);
-                            conn.execute(query);
+                            conn.execute(URLS.Query_URL,query);
                         }
                     });
                 }
