@@ -132,6 +132,7 @@ public class SignupActivity extends AppCompatActivity implements ValidationRespo
         _signupButton.setEnabled(true);
         setResult(RESULT_OK, null);
         session.createLoginSession(name,mobile,password);
+        setResult(RESULT_OK,null);
         Intent intent = new Intent(SignupActivity.this, Home.class);
         startActivity(intent);
         finish();

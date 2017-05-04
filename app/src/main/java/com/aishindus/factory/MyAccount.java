@@ -25,15 +25,17 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-public class MyAccount extends AppCompatActivity implements ValidationResponse,TextWatcher {
+public class MyAccount extends AppCompatActivity implements ValidationResponse, TextWatcher {
     Toolbar mToolbar;
     SessionManager session;
     EditText name, password, mobile;
-    boolean enabled = false;
+    boolean edit = true;
     MenuItem item;
     boolean changed = false;
     HashMap<String, String> user;
     PopupWindow mPopup;
+    TextInputLayout mobileWrapper;
+    boolean hasError = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,21 +66,25 @@ public class MyAccount extends AppCompatActivity implements ValidationResponse,T
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit:
-                if (!enabled) {
+                if (edit) {
+                    edit = false;
                     item.setIcon(R.drawable.ic_done_white_24dp);
                     enableEditText(name);
                     name.requestFocus();
+                    name.setSelection(name.getText().length());
                     enableEditText(mobile);
                     enableEditText(password);
                 } else {
-                    item.setIcon(R.mipmap.ic_mode_edit_white_24dp);
-                    disableEditText(name);
-                    disableEditText(mobile);
-                    disableEditText(password);
-                    ask();
+                    if (!changed) {
+                        edit = true;
+                        item.setIcon(R.mipmap.ic_mode_edit_white_24dp);
+                        disableEditText(name);
+                        disableEditText(mobile);
+                        disableEditText(password);
+                    } else
+                        ask();
                 }
                 this.item = item;
-                enabled = !enabled;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -106,13 +112,23 @@ public class MyAccount extends AppCompatActivity implements ValidationResponse,T
 
     @Override
     public void onBackPressed() {
-        if (enabled) {
-            enabled = !enabled;
-            item.setIcon(R.mipmap.ic_mode_edit_white_24dp);
-            disableEditText(name);
-            disableEditText(mobile);
-            disableEditText(password);
-            ask();
+        if (!edit) {
+            edit = true;
+            if(hasError) {
+                hasError = false;
+                mobileWrapper.setError(null);
+            }
+            if(changed) {
+                ask();
+                changed = false;
+            }
+            else {
+                item.setIcon(R.mipmap.ic_mode_edit_white_24dp);
+                setText();
+                disableEditText(name);
+                disableEditText(mobile);
+                disableEditText(password);
+            }
         } else
             super.onBackPressed();
     }
@@ -130,8 +146,17 @@ public class MyAccount extends AppCompatActivity implements ValidationResponse,T
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int whichButton) {
+                            if (hasError) {
+                                mobileWrapper.setError(null);
+                                hasError = false;
+                            }
+                            item.setIcon(R.mipmap.ic_mode_edit_white_24dp);
                             setText();
+                            disableEditText(name);
+                            disableEditText(mobile);
+                            disableEditText(password);
                             dialog.dismiss();
+                            changed = false;
                         }
                     }).show();
         }
@@ -142,9 +167,10 @@ public class MyAccount extends AppCompatActivity implements ValidationResponse,T
             return;
         }
         String userName = name.getText().toString();
+        userName=userName.substring(0,1).toUpperCase()+userName.substring(1);
         String userMobile = mobile.getText().toString();
         String userPassword = password.getText().toString();
-        String query="update users set name='"+userName+"',mobile='"+userMobile+"',password='"+userPassword+"' where mobile='"+user.get(session.KEY_MOB)+"';";
+        String query = "update users set name='" + userName + "',mobile='" + userMobile + "',password='" + userPassword + "' where mobile='" + user.get(session.KEY_MOB) + "';";
         Get_Result conn = new Get_Result(this);
         conn.delegate = MyAccount.this;
         showProgress(true);
@@ -214,7 +240,6 @@ public class MyAccount extends AppCompatActivity implements ValidationResponse,T
 
     @Override
     public void response(boolean result, String s) {
-
         showProgress(false);
         if (result) {
             JSONObject jObject = null;
@@ -237,16 +262,17 @@ public class MyAccount extends AppCompatActivity implements ValidationResponse,T
                     e.printStackTrace();
                 }
                 if (error_no == 1062) {
-                    TextInputLayout mobileWrapper = (TextInputLayout) mobile.getParentForAccessibility();
+                    mobileWrapper = (TextInputLayout) mobile.getParentForAccessibility();
                     mobileWrapper.setError("Mobile Number Already Registered ");
+                    hasError = true;
                     enableEditText(mobile);
                     mobile.requestFocus();
+                    changed = false;
                 } else
                     Snackbar.make(findViewById(R.id.my_account), Html.fromHtml("<b> Error !!</b>"), Snackbar.LENGTH_INDEFINITE).show();
             } else
                 onUpdateSuccess();
-        }
-        else
+        } else
             Snackbar.make(findViewById(R.id.my_account), Html.fromHtml("<b> Connection Error. Please Try Again! </b>"), Snackbar.LENGTH_INDEFINITE).show();
     }
 
@@ -265,11 +291,17 @@ public class MyAccount extends AppCompatActivity implements ValidationResponse,T
 
 
     public void onUpdateSuccess() {
+        item.setIcon(R.mipmap.ic_mode_edit_white_24dp);
+        edit = true;
+        changed = false;
+        disableEditText(name);
+        disableEditText(mobile);
+        disableEditText(password);
         String name = this.name.getText().toString();
-        name=name.substring(0,1).toUpperCase()+name.substring(1);
+        name = name.substring(0, 1).toUpperCase() + name.substring(1);
         String mobile = this.mobile.getText().toString();
         String password = this.password.getText().toString();
-        session.createLoginSession(name,mobile,password);
+        session.createLoginSession(name, mobile, password);
         Snackbar.make(findViewById(R.id.my_account), Html.fromHtml("<b> Updated !!</b>"), Snackbar.LENGTH_INDEFINITE).show();
     }
 }

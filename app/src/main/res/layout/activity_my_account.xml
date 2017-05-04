@@ -38,7 +38,8 @@
                 android:textColor="@drawable/edit_text_selector"
                 android:inputType="textPersonName"
                 android:minWidth="350dp"
-                android:textSize="25sp"/>
+                android:textSize="25sp"
+                android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -56,7 +57,8 @@
                 android:hint="Mobile"
                 android:inputType="number"
                 android:minWidth="350dp"
-                android:textSize="25sp"/>
+                android:textSize="25sp"
+                android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -64,7 +66,9 @@
             android:layout_height="wrap_content"
             android:textColorHint="@color/black"
             app:hintTextAppearance="@style/TextLabel"
-            android:minHeight="25dp">
+            android:minHeight="25dp"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/disabled_color">
             <EditText
                 android:id="@+id/print_password"
                 android:textColor="@drawable/edit_text_selector"
@@ -73,7 +77,8 @@
                 android:hint="Password"
                 android:inputType="textPassword"
                 android:minWidth="350dp"
-                android:textSize="25sp"/>
+                android:textSize="25sp"
+                android:maxLines="1"/>
         </android.support.design.widget.TextInputLayout>
 
     </LinearLayout>
